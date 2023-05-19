@@ -81,8 +81,10 @@ const businessHours = () => {
 
   return (
     <div>
-      <h1>There are {businessHours()} business time between dates</h1>
-
+      <h1>{businessHours()}</h1>
+      <h2>business time since start date</h2>
+      <br />
+      <br />
         <input type="time" onChange={(event) => setStartBusinessDay(event.target.value)} />
         <p>Start of business day</p>
         <input type="time" onChange={(event) => setEndBusinessDay(event.target.value)} />
