@@ -64,7 +64,7 @@ const businessHours = () => {
   firstDate.setDate(firstDate.getDate() + 1)
   lastDate.setDate(lastDate.getDate() - 1)
 
-
+  //add remaining business days
   while (firstDate <= lastDate) {
     const dayOfWeek = firstDate.getDay()
     if(dayOfWeek !== 0 && dayOfWeek !== 6 && holidays.filter(day => day.getTime() === firstDate.getTime()).length === 0) {
@@ -75,6 +75,7 @@ const businessHours = () => {
     firstDate.setDate(firstDate.getDate() + 1)
   }
 
+  //formatted results
   return `${Math.floor(count / businessDay )} days / ${Math.floor(count % businessDay / hour)} hours / ${Math.floor(count % businessDay % hour / minute)} minutes`
 }
 
