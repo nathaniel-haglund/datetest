@@ -22,6 +22,12 @@ const businessHours = () => {
   const milliStartTime = (startTime.split(':')[0] * hour) + (startTime.split(':')[1] * minute)
   const businessDay = milliBusinessEnd - milliBusinessStart
  
+  const countFormatter = count => {
+    return `${Math.floor(count / businessDay )} days / ${Math.floor(count % businessDay / hour)} hours / ${Math.floor(count % businessDay % hour / minute)} minutes`
+  }
+
+  const isHoliday = day => holidays.filter(holiday => holiday.getTime() === day.getTime()).length === 0 ? false : true
+
   let count = 0
 
   const firstDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), 0, 0, 0)
@@ -29,11 +35,15 @@ const businessHours = () => {
   const lastDateMidnight = new Date(lastDate.getFullYear(), lastDate.getMonth(), lastDate.getDate(), 0, 0, 0)
 
   //Check if start date in the future
-  if(lastDate.getTime() < firstDate.getTime() + milliStartTime) { return `Hasn't started yet` }
+  if(lastDate.getTime() < firstDate.getTime() + milliStartTime) { return countFormatter(count) }
   
   //check if start time current day
   if (firstDate.getTime() === lastDateMidnight.getTime()) {
 
+    //check if it is a holiday
+    if (isHoliday(firstDate)) {
+      return countFormatter(count)
+    }
     //If start time before business open
     if (milliBusinessStart >= milliStartTime) {
 
@@ -55,12 +65,12 @@ const businessHours = () => {
         }
       }
     console.log('count', count / hour)
-    return `${Math.floor(count / businessDay )} days / ${Math.floor(count % businessDay / hour)} hours / ${Math.floor(count % businessDay % hour / minute)} minutes`
+    return countFormatter(count)
   }
 
   //if multiple days, add first day time
   //Check if first day is holiday
-  if (holidays.filter(day => day.getTime() === firstDate.getTime()).length === 0) {
+  if (!isHoliday(firstDate)) {
 
     //If start of business is after start time
     if (firstDate.getTime() + milliBusinessStart > firstDate.getTime() + milliStartTime) {
@@ -75,7 +85,7 @@ const businessHours = () => {
 
   //if multiple days, add last day time
   //check if last day is holiday
-  if (holidays.filter(day => day.getTime() === lastDateMidnight.getTime()).length === 0){
+  if (!isHoliday(lastDateMidnight)){
     //if current time is between business hour
     if (lastDate.getTime() < (lastDateMidnight.getTime() + milliBusinessEnd) && lastDate.getTime() > (lastDateMidnight.getTime() + milliBusinessStart)) {
       count += lastDate.getTime() - (lastDateMidnight.getTime() + milliBusinessStart)
@@ -92,15 +102,17 @@ const businessHours = () => {
 
   //add remaining business days
   while (firstDate <= lastDate) {
+    //Check if day is Saturday/Sunday/Holiday
     const dayOfWeek = firstDate.getDay()
-    if(dayOfWeek !== 0 && dayOfWeek !== 6 && holidays.filter(day => day.getTime() === firstDate.getTime()).length === 0) {
+    if(dayOfWeek !== 0 && dayOfWeek !== 6 && !isHoliday(firstDate)) {
       count += businessDay
     }
+    //move date forward one day
     firstDate.setDate(firstDate.getDate() + 1)
   }
 
   //formatted results
-  return `${Math.floor(count / businessDay )} days / ${Math.floor(count % businessDay / hour)} hours / ${Math.floor(count % businessDay % hour / minute)} minutes`
+  return countFormatter(count)
 }
 
   return (
