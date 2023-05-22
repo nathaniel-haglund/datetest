@@ -18,47 +18,73 @@ const hour = 60 * minute
 
 const businessHours = () => {
   const milliBusinessStart = (startBusinessDay.split(':')[0] * hour) + (startBusinessDay.split(':')[1] * minute)
-  console.log('milliBusinessStart', milliBusinessStart / hour)
   const milliBusinessEnd = (endBusinessDay.split(':')[0] * hour) + (endBusinessDay.split(':')[1] * minute)
-  console.log('milliBusinessEnd', milliBusinessEnd / hour)
   const milliStartTime = (startTime.split(':')[0] * hour) + (startTime.split(':')[1] * minute)
-  console.log('milliStartTime', milliStartTime)
   const businessDay = milliBusinessEnd - milliBusinessStart
-  console.log('business day', businessDay / hour)
  
   let count = 0
 
   const firstDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), 0, 0, 0)
-  console.log('first date', firstDate)
   const lastDate = new Date(Date.now())
-  console.log('last date', lastDate)
   const lastDateMidnight = new Date(lastDate.getFullYear(), lastDate.getMonth(), lastDate.getDate(), 0, 0, 0)
-  console.log('last date midnight', lastDateMidnight)
 
-  //add first day time
-  console.log('start time', startTime)
-  console.log('else count', ((firstDate.getTime() + milliBusinessEnd) - (firstDate.getTime() + milliStartTime)) / hour )
+  //Check if start date in the future
+  if(lastDate.getTime() < firstDate.getTime() + milliStartTime) { return `Hasn't started yet` }
+  
+  //check if start time current day
+  if (firstDate.getTime() === lastDateMidnight.getTime()) {
+
+    //If start time before business open
+    if (milliBusinessStart >= milliStartTime) {
+
+      //If current time after business close
+      if (lastDate.getTime() >= firstDate.getTime() + milliBusinessEnd) {
+        count += businessDay
+      //If current time before business close
+      }else {
+        count += lastDate.getTime() - (firstDate.getTime() + milliBusinessStart)
+      }
+    //If start time after business open
+    } else {
+      //if current time after business close
+        if (lastDate.getTime() >= firstDate.getTime() + milliBusinessEnd) {
+          count += milliBusinessEnd - milliStartTime
+        //If current time before business close
+        }else {
+          count += lastDate.getTime() - (firstDate.getTime() + milliStartTime)
+        }
+      }
+    console.log('count', count / hour)
+    return `${Math.floor(count / businessDay )} days / ${Math.floor(count % businessDay / hour)} hours / ${Math.floor(count % businessDay % hour / minute)} minutes`
+  }
+
+  //if multiple days, add first day time
+  //Check if first day is holiday
   if (holidays.filter(day => day.getTime() === firstDate.getTime()).length === 0) {
 
+    //If start of business is after start time
     if (firstDate.getTime() + milliBusinessStart > firstDate.getTime() + milliStartTime) {
       count += businessDay
+
+    //if start time after start of business day  
     } else {
-      count += (firstDate.getTime() + milliBusinessEnd) - (firstDate.getTime() + milliStartTime)
+      count += milliBusinessEnd - milliStartTime
     }
-  } 
-  console.log('time added for first day', count / hour)
-  
-  //add last day time
-  const firstDay = count
-  console.log('holiday last day', holidays[0], lastDateMidnight)
+  }
+
+
+  //if multiple days, add last day time
+  //check if last day is holiday
   if (holidays.filter(day => day.getTime() === lastDateMidnight.getTime()).length === 0){
+    //if current time is between business hour
     if (lastDate.getTime() < (lastDateMidnight.getTime() + milliBusinessEnd) && lastDate.getTime() > (lastDateMidnight.getTime() + milliBusinessStart)) {
       count += lastDate.getTime() - (lastDateMidnight.getTime() + milliBusinessStart)
+    //if current time is after business end  
     } else if (lastDate.getTime() > (lastDateMidnight.getTime() + milliBusinessEnd)) {
       count += businessDay
     }
   }
-  console.log('last date time added', (count - firstDay) / hour)
+
 
   //remove first and last day
   firstDate.setDate(firstDate.getDate() + 1)
@@ -70,8 +96,6 @@ const businessHours = () => {
     if(dayOfWeek !== 0 && dayOfWeek !== 6 && holidays.filter(day => day.getTime() === firstDate.getTime()).length === 0) {
       count += businessDay
     }
-    console.log('hit and count', firstDate, count / hour)
-    console.log('holidays', holidays)
     firstDate.setDate(firstDate.getDate() + 1)
   }
 
