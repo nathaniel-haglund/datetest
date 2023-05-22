@@ -17,9 +17,13 @@ const hour = 60 * minute
 
 
 const businessHours = () => {
+  //milliseconds between midnight and start of business day
   const milliBusinessStart = (startBusinessDay.split(':')[0] * hour) + (startBusinessDay.split(':')[1] * minute)
+  //milliseconds between midnight and end of business day
   const milliBusinessEnd = (endBusinessDay.split(':')[0] * hour) + (endBusinessDay.split(':')[1] * minute)
+  //milliseconds between midnight and start time
   const milliStartTime = (startTime.split(':')[0] * hour) + (startTime.split(':')[1] * minute)
+  //one business day in milliseconds
   const businessDay = milliBusinessEnd - milliBusinessStart
  
   const countFormatter = count => {
@@ -30,38 +34,41 @@ const businessHours = () => {
 
   let count = 0
 
-  const firstDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), 0, 0, 0)
+  //start day at midnight
+  const firstDateMidnight = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), 0, 0, 0)
+  //current date/time
   const lastDate = new Date(Date.now())
+  //current day midnight
   const lastDateMidnight = new Date(lastDate.getFullYear(), lastDate.getMonth(), lastDate.getDate(), 0, 0, 0)
 
   //Check if start date in the future
-  if(lastDate.getTime() < firstDate.getTime() + milliStartTime) { return countFormatter(count) }
+  if(lastDate.getTime() < firstDateMidnight.getTime() + milliStartTime) { return countFormatter(count) }
   
   //check if start time current day
-  if (firstDate.getTime() === lastDateMidnight.getTime()) {
+  if (firstDateMidnight.getTime() === lastDateMidnight.getTime()) {
 
     //check if it is a holiday
-    if (isHoliday(firstDate)) {
+    if (isHoliday(firstDateMidnight)) {
       return countFormatter(count)
     }
     //If start time before business open
     if (milliBusinessStart >= milliStartTime) {
 
       //If current time after business close
-      if (lastDate.getTime() >= firstDate.getTime() + milliBusinessEnd) {
+      if (lastDate.getTime() >= firstDateMidnight.getTime() + milliBusinessEnd) {
         count += businessDay
       //If current time before business close
       }else {
-        count += lastDate.getTime() - (firstDate.getTime() + milliBusinessStart)
+        count += lastDate.getTime() - (firstDateMidnight.getTime() + milliBusinessStart)
       }
     //If start time after business open
     } else {
       //if current time after business close
-        if (lastDate.getTime() >= firstDate.getTime() + milliBusinessEnd) {
+        if (lastDate.getTime() >= firstDateMidnight.getTime() + milliBusinessEnd) {
           count += milliBusinessEnd - milliStartTime
         //If current time before business close
         }else {
-          count += lastDate.getTime() - (firstDate.getTime() + milliStartTime)
+          count += lastDate.getTime() - (firstDateMidnight.getTime() + milliStartTime)
         }
       }
     console.log('count', count / hour)
@@ -70,10 +77,10 @@ const businessHours = () => {
 
   //if multiple days, add first day time
   //Check if first day is holiday
-  if (!isHoliday(firstDate)) {
+  if (!isHoliday(firstDateMidnight)) {
 
     //If start of business is after start time
-    if (firstDate.getTime() + milliBusinessStart > firstDate.getTime() + milliStartTime) {
+    if (firstDateMidnight.getTime() + milliBusinessStart > firstDateMidnight.getTime() + milliStartTime) {
       count += businessDay
 
     //if start time after start of business day  
@@ -97,18 +104,18 @@ const businessHours = () => {
 
 
   //remove first and last day
-  firstDate.setDate(firstDate.getDate() + 1)
+  firstDateMidnight.setDate(firstDateMidnight.getDate() + 1)
   lastDate.setDate(lastDate.getDate() - 1)
 
   //add remaining business days
-  while (firstDate <= lastDate) {
+  while (firstDateMidnight <= lastDate) {
     //Check if day is Saturday/Sunday/Holiday
-    const dayOfWeek = firstDate.getDay()
-    if(dayOfWeek !== 0 && dayOfWeek !== 6 && !isHoliday(firstDate)) {
+    const dayOfWeek = firstDateMidnight.getDay()
+    if(dayOfWeek !== 0 && dayOfWeek !== 6 && !isHoliday(firstDateMidnight)) {
       count += businessDay
     }
     //move date forward one day
-    firstDate.setDate(firstDate.getDate() + 1)
+    firstDateMidnight.setDate(firstDateMidnight.getDate() + 1)
   }
 
   //formatted results
