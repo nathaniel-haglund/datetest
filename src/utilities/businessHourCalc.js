@@ -44,7 +44,7 @@ const businessDaysCalculator = (startingTime, endingTime, businessStart, busines
 
   //check if start time current day
   if (startDate.getTime() === endDate.getTime()) {
-    console.log('start date equal', startDate.getTime() === endDate.getTime())
+
     //check if it is a holiday
     if (isHoliday(startDate, holidaylist)) {
       return countFormatter(count)
@@ -54,23 +54,27 @@ const businessDaysCalculator = (startingTime, endingTime, businessStart, busines
     if(startTime > milliBusinessEnd) {
       return countFormatter(count)
     }
+    
     //If start time before business open
     if (milliBusinessStart >= startTime) {
 
       //If current time after business close
       if (endTime >= milliBusinessEnd) {
         count += businessDay
+
       //If current time before business close
       }else {
         count += endTime - milliBusinessStart
         console.log('count', count)
       }
+
     //If start time after business open
     } else {
+
       //if current time after business close
         if (endTime >= milliBusinessEnd) {
           count += milliBusinessEnd - startTime
-          console.log('count', count / HOUR)
+
         //If current time before business close
         }else {
           count += endTime - startTime
@@ -93,12 +97,14 @@ const businessDaysCalculator = (startingTime, endingTime, businessStart, busines
     }
   }
 
-    //if multiple days, add last day time
+  //if multiple days, add last day time
   //check if last day is holiday
   if (!isHoliday(endDate)){
+
     //if current time is between business hour
     if (endTime < milliBusinessEnd && endTime > milliBusinessStart) {
       count += endTime - milliBusinessStart
+      
     //if current time is after business end  
     } else if (endTime > milliBusinessEnd) {
       count += businessDay
