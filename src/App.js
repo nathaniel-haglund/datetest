@@ -1,5 +1,3 @@
-import "react-datepicker/dist/react-datepicker.css";
-import 'bootstrap/dist/css/bootstrap.min.css';
 import {businessDaysCalculator} from './utilities/businessHourCalc'
 
 function App() {
