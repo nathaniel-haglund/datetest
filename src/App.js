@@ -6,7 +6,6 @@ function App() {
     <div>
       <p>{bdays.business_days} days</p>
       <p>{bdays.business_hours} hours</p>
-      <p>{bdays.count / 1000 /60 / 60}</p>
     </div>
   )
 }
