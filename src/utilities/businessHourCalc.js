@@ -29,13 +29,14 @@ const businessDaysCalculator = (startingTime, endingTime, businessStart, busines
   const countFormatter = count => {
     return {
       business_days: Math.round(count/ businessDay),
-      business_hours: Math.round(count / HOUR )
+      business_hours: Math.round(count / HOUR ),
+      count: count
     }
   }
 
 //holiday checking function returns true if day is a holiday
   const isHoliday = (day) => holidaylist.filter(holiday => holiday.getTime() === day.getTime()).length === 0 ? false : true
-
+  
   let count = 0
   holidaylist.concat(holidays)
 
@@ -91,8 +92,8 @@ const businessDaysCalculator = (startingTime, endingTime, businessStart, busines
     if (milliBusinessStart > startTime) {
       count += businessDay
 
-    //if start time after start of business day  
-    } else {
+    //if start time between business hours 
+    } else if (startTime > milliBusinessStart && startTime < milliBusinessEnd) {
       count += milliBusinessEnd - startTime
     }
   }
