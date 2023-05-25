@@ -2,7 +2,7 @@ const SECOND = 1000
 const MINUTE = SECOND * 60
 const HOUR = MINUTE * 60
 
-//Takes date in format YYYY-MM-DD and creates javascript timestamp in local time
+//Takes date in format YYYY-MM-DD and creates javascript timestamp in UTC
 const dateMaker = (date) => {
   const [year, month, day] = date.split('-')
   return new Date(`${year}-${month}-${day}T00:00:00`)
