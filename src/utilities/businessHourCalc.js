@@ -25,7 +25,6 @@ const businessDaysCalculator = (startingTime, endingTime, businessStart, busines
   const milliBusinessEnd = timeMaker(businessEnd) < timeMaker(businessStart) ? timeMaker(businessEnd) + (24 * HOUR) : timeMaker(businessEnd)
   const businessDay = milliBusinessEnd - milliBusinessStart
   
-  console.log(businessDay)
 
 //creates returned object
   const countFormatter = count => {
