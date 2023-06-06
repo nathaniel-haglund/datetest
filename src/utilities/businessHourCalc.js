@@ -41,10 +41,11 @@ const businessDaysCalculator = (startingTime, endingTime, businessStart, busines
   holidaylist.concat(holidays)
 
   //Check if start date in the future
-  if(endDate.getTime() + endTime < startDate.getTime() + startTime) { return countFormatter(count) }
+  if(endDate.getTime() + endTime < startDate.getTime() + startTime || endDate < startDate ) { return countFormatter(count) }
+  
 
   //check if start time current day
-  if (startDate.getTime() + milliBusinessEnd >= endDate.getTime() + endTime) {
+  if (startDate.getTime() + milliBusinessEnd >= endDate.getTime() + timeMaker(endingTime.split(' ')[1])) {
 
     //check if it is a holiday
     if (isHoliday(startDate, holidaylist)) {
