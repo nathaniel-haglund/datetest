@@ -43,7 +43,10 @@ const businessDaysCalculator = (startingTime, endingTime, businessStart, busines
   //Check if start date in the future
   if(endDate.getTime() + endTime < startDate.getTime() + startTime || endDate < startDate ) { return countFormatter(count) }
   
-
+  //Add previous business day hours in multi calendar day business span scenario
+  if(startTime < milliBusinessEnd - (24 * HOUR)) {
+    count += milliBusinessEnd - (24 * HOUR) - startTime
+  }
   //check if start time current day
   if (startDate.getTime() + milliBusinessEnd >= endDate.getTime() + timeMaker(endingTime.split(' ')[1])) {
 
