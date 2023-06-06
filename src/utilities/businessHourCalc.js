@@ -30,7 +30,7 @@ const businessDaysCalculator = (startingTime, endingTime, businessStart, busines
   const countFormatter = count => {
     return {
       business_days: Math.round(count/ businessDay),
-      business_hours: count / HOUR,
+      business_hours: Math.floor(count / HOUR),
     }
   }
 
