@@ -20,9 +20,9 @@ const businessDaysCalculator = (startingTime, endingTime, businessStart, busines
   const startDate = dateMaker(startingTime.split(' ')[0])
   const startTime = timeMaker(startingTime.split(' ')[1])
   const endDate = dateMaker(endingTime.split(' ')[0])
-  const endTime = timeMaker(endingTime.split(' ')[1])
   const milliBusinessStart = timeMaker(businessStart)
   const milliBusinessEnd = timeMaker(businessEnd) < timeMaker(businessStart) ? timeMaker(businessEnd) + (24 * HOUR) : timeMaker(businessEnd)
+  const endTime = timeMaker(endingTime.split(' ')[1]) + (24 * HOUR) < milliBusinessEnd ? timeMaker(endingTime.split(' ')[1]) + (24 * HOUR) : timeMaker(endingTime.split(' ')[1])
   const businessDay = milliBusinessEnd - milliBusinessStart
 
 
@@ -44,7 +44,7 @@ const businessDaysCalculator = (startingTime, endingTime, businessStart, busines
   if(endDate.getTime() + endTime < startDate.getTime() + startTime) { return countFormatter(count) }
 
   //check if start time current day
-  if (startDate.getTime() + milliBusinessEnd >= endDate.getTime()) {
+  if (startDate.getTime() + milliBusinessEnd >= endDate.getTime() + endTime) {
 
     //check if it is a holiday
     if (isHoliday(startDate, holidaylist)) {
@@ -105,13 +105,18 @@ const businessDaysCalculator = (startingTime, endingTime, businessStart, busines
   if (!isHoliday(endDate)){
 
     //if current time is between business hour
-    if (endTime < milliBusinessEnd && endTime > milliBusinessStart) {
+    if (endTime < milliBusinessEnd && endTime > milliBusinessStart && endTime < (24 * HOUR)) {
       count += endTime - milliBusinessStart
       
     //if current time is after business end  
-    } else if (endTime > milliBusinessEnd) {
+    } else if (endTime > milliBusinessEnd && endTime < (24 * HOUR)) {
       count += businessDay
+
+    //remove time in a multi calendar day business day scenario
+    } else if (endTime < milliBusinessEnd && endTime > milliBusinessStart && endTime > (24 * HOUR)) {
+      count -= milliBusinessEnd - endTime
     }
+
   }
 
   //remove first and last day
