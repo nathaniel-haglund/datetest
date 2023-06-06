@@ -1,7 +1,7 @@
 import {businessDaysCalculator} from './utilities/businessHourCalc'
 
 function App() {
-  const bdays = businessDaysCalculator('2023-06-06 00:22:23', '2023-06-05 00:35:00', '12:30:00', '01:00:00', [])
+  const bdays = businessDaysCalculator('2023-06-04 18:45:23', '2023-06-05 00:35:00', '17:30:00', '02:00:00', [])
   return (
     <div>
       <p>{bdays.business_days} days</p>

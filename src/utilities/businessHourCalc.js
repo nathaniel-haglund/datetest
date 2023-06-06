@@ -66,8 +66,7 @@ const businessDaysCalculator = (startingTime, endingTime, businessStart, busines
 
       //If current time before business close
       }if (endTime >= milliBusinessStart && endTime <= milliBusinessEnd) {
-        count += endTime + (24 * HOUR)  - milliBusinessStart
-
+        count += endTime - milliBusinessStart
       }
 
     //If start time after business open
@@ -79,8 +78,7 @@ const businessDaysCalculator = (startingTime, endingTime, businessStart, busines
 
         //If current time before business close
         }else {
-          count += endTime + (24 * HOUR) - startTime
-
+          count += endTime - startTime
         }
       }
     return countFormatter(count)
