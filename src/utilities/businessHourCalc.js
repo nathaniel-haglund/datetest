@@ -24,13 +24,13 @@ const businessDaysCalculator = (startingTime, endingTime, businessStart, busines
   const milliBusinessStart = timeMaker(businessStart)
   const milliBusinessEnd = timeMaker(businessEnd) < timeMaker(businessStart) ? timeMaker(businessEnd) + (24 * HOUR) : timeMaker(businessEnd)
   const businessDay = milliBusinessEnd - milliBusinessStart
-  
+
 
 //creates returned object
   const countFormatter = count => {
     return {
       business_days: Math.round(count/ businessDay),
-      business_hours: Math.round(count / HOUR ),
+      business_hours: count / HOUR,
     }
   }
 
@@ -44,7 +44,7 @@ const businessDaysCalculator = (startingTime, endingTime, businessStart, busines
   if(endDate.getTime() + endTime < startDate.getTime() + startTime) { return countFormatter(count) }
 
   //check if start time current day
-  if (startDate.getTime() === endDate.getTime()) {
+  if (startDate.getTime() + milliBusinessEnd >= endDate.getTime()) {
 
     //check if it is a holiday
     if (isHoliday(startDate, holidaylist)) {
@@ -64,9 +64,9 @@ const businessDaysCalculator = (startingTime, endingTime, businessStart, busines
         count += businessDay
 
       //If current time before business close
-      }else {
-        count += endTime - milliBusinessStart
-        console.log('count', count)
+      }if (endTime >= milliBusinessStart && endTime <= milliBusinessEnd) {
+        count += endTime + (24 * HOUR)  - milliBusinessStart
+
       }
 
     //If start time after business open
@@ -78,7 +78,8 @@ const businessDaysCalculator = (startingTime, endingTime, businessStart, busines
 
         //If current time before business close
         }else {
-          count += endTime - startTime
+          count += endTime + (24 * HOUR) - startTime
+
         }
       }
     return countFormatter(count)
@@ -95,6 +96,7 @@ const businessDaysCalculator = (startingTime, endingTime, businessStart, busines
     //if start time between business hours 
     } else if (startTime > milliBusinessStart && startTime < milliBusinessEnd) {
       count += milliBusinessEnd - startTime
+
     }
   }
 
